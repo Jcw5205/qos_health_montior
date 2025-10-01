@@ -14,6 +14,14 @@ class TopicMonitor(Node):
         self.setup_topics()
         self.create_gui()
 
+        self.subscriptions = {}
+        self.message_counts = {}
+        self.is_recording = False
+        self.db_conn = None
+        self.db_lock = threading.Lock()
+        self.db_path = None
+
+
     def setup_topics(self):
         topic_list = self.get_topic_names_and_types()
         for topic, types in topic_list:
@@ -35,6 +43,19 @@ class TopicMonitor(Node):
                 'publishers': pub_list,
                 'subscribers': [sub.node_name for sub in subscribers_info],
             }
+
+    def discover_and_subscribe(self):
+        
+        topic_list = self.get_topic_names_and_types()
+
+        for topic_name in topic_list:
+            if topic_name in self.subscriptions or topic_name.startswith('/parameter_events') or topic_name.startswith('/rosout'):
+                continue
+            
+
+    
+
+
 
     def create_gui(self):
         self.root = tk.Tk()
