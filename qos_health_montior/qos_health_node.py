@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
-from rclpy.qos import ReliabilityPolicy
+from rclpy.qos import ReliabilityPolicy, QoSProfile, QoSHistoryPolicy
 import tkinter as tk
 from tkinter import ttk
 import threading
@@ -58,10 +58,31 @@ class TopicMonitor(Node):
                 msg_type = self.get_msg_type(msg_type_str)
 
                 if msg_type:
-                    qos_profile = QoSProfile(reliability = ReliabilityPolicy.BEST_EFFORT, history = )
+                    qos_profile = QoSProfile(reliability = ReliabilityPolicy.BEST_EFFORT, histort = QoSHistoryPolicy.KEEP_LAST, depth = 10)
+                    subscirption = self.create_subscription(msg_type,topic_name,lambda msg, topic=topic_name, msg_type_str=msg_type_str: self.message_callback(msg, topic, msg_type_str), qos_profile)
+                    
+                    self.subscriptions[topic_name] = subscription
+                    self.message_counts[topic_name] = 0
+                    
+                    self.get_logger().info(f'Subscribed to: {topic_name}')
+                    
+            except Exception as e:
+                self.get_logger().warn(f'Failed to subscribe to {topic_name}: {str(e)}')
+    
+
     
     def get_msg_type(msg_type_str):
-        #complete later 
+        try:
+            parts = msg_type_str.split('/')
+            if len(parts) == 3:
+                package, msg_folder, msg_name = parts
+                module_name = f'{package}.{msg_folder}'
+                module = __import__(module_name, fromlist=[msg_name])
+                return getattr(module, msg_name)
+        except Exception as e:
+            self.get_logger().warn(f'Could not import {msg_type_str}: {str(e)}')
+
+        return None
                     
 
 
