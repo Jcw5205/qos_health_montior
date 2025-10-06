@@ -48,14 +48,25 @@ class TopicMonitor(Node):
         
         topic_list = self.get_topic_names_and_types()
 
-        for topic_name in topic_list:
+        for topic_name,types in topic_list:
             if topic_name in self.subscriptions or topic_name.startswith('/parameter_events') or topic_name.startswith('/rosout'):
                 continue
             
+            msg_type_str = types[0]
+
+            try:
+                msg_type = self.get_msg_type(msg_type_str)
+
+                if msg_type:
+                    qos_profile = QoSProfile(reliability = ReliabilityPolicy.BEST_EFFORT, history = )
+    
+    def get_msg_type(msg_type_str):
+        #complete later 
+                    
+
+
 
     
-
-
 
     def create_gui(self):
         self.root = tk.Tk()
