@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
+from rclpy.serialization import serialize_message
+from std_msgs.msg import String
+import rosbag2_py
 from rclpy.qos import ReliabilityPolicy, QoSProfile, QoSHistoryPolicy
 import tkinter as tk
 from tkinter import ttk
 import threading
+import pandas as pd
 
 class TopicMonitor(Node):
     def __init__(self):
@@ -14,7 +18,7 @@ class TopicMonitor(Node):
         self.setup_topics()
         self.create_gui()
 
-        self.subscriptions = {}
+        self.sub_dict = {}
         self.message_counts = {}
         self.is_recording = False
         self.db_conn = None
@@ -45,11 +49,10 @@ class TopicMonitor(Node):
             }
 
     def discover_and_subscribe(self):
-        
         topic_list = self.get_topic_names_and_types()
 
-        for topic_name,types in topic_list:
-            if topic_name in self.subscriptions or topic_name.startswith('/parameter_events') or topic_name.startswith('/rosout'):
+        for topic_name, types in topic_list:
+            if topic_name in self.sub_dict or topic_name.startswith('/parameter_events') or topic_name.startswith('/rosout'):  # Changed
                 continue
             
             msg_type_str = types[0]
@@ -58,10 +61,19 @@ class TopicMonitor(Node):
                 msg_type = self.get_msg_type(msg_type_str)
 
                 if msg_type:
-                    qos_profile = QoSProfile(reliability = ReliabilityPolicy.BEST_EFFORT, histort = QoSHistoryPolicy.KEEP_LAST, depth = 10)
-                    subscirption = self.create_subscription(msg_type,topic_name,lambda msg, topic=topic_name, msg_type_str=msg_type_str: self.message_callback(msg, topic, msg_type_str), qos_profile)
+                    qos_profile = QoSProfile(
+                        reliability=ReliabilityPolicy.BEST_EFFORT, 
+                        history=QoSHistoryPolicy.KEEP_LAST,  
+                        depth=10
+                    )
+                    subscription = self.create_subscription(  
+                        msg_type,
+                        topic_name,
+                        lambda msg, topic=topic_name, msg_type_str=msg_type_str: self.message_callback(msg, topic, msg_type_str), 
+                        qos_profile
+                    )
                     
-                    self.subscriptions[topic_name] = subscription
+                    self.sub_dict[topic_name] = subscription  
                     self.message_counts[topic_name] = 0
                     
                     self.get_logger().info(f'Subscribed to: {topic_name}')
@@ -130,6 +142,17 @@ def main(args=None):
 
     node.destroy_node()
     rclpy.shutdown()
+
+class SimpleBagRecorder(Node):
+    def __init__(self):
+        super().__init__('simple_bag_recorder')
+        self.writer = rosbag2_py.SequentailWriter()
+
+        storage_options = rosbag2_py.StorageOptions(
+            uri='my_bag',
+            storage_id='mcap')
+        converter_options = rosbag2_py.ConverterOptions('', '')
+        self.writer.open(storage_options, converter_options)
 
 if __name__ == "__main__":
     main()
