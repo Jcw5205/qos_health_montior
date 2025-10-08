@@ -1,0 +1,18 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/ryanhorenci/ros2_ws/install/qos_health_monitor/lib/python3.10/site-packages",
+        "/home/ryanhorenci/ros2_ws/install/QoS_Health_Monitor/lib/python3.10/site-packages",
+        "/home/ryanhorenci/ros2_ws/build/my_robot_controller",
+        "/home/ryanhorenci/ros2_ws/install/my_robot_controller/lib/python3.10/site-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/ryanhorenci/ros2_ws/install/qos_health_monitor/lib/python3.10/site-packages",
+        "/home/ryanhorenci/ros2_ws/install/QoS_Health_Monitor/lib/python3.10/site-packages",
+        "/home/ryanhorenci/ros2_ws/build/my_robot_controller",
+        "/home/ryanhorenci/ros2_ws/install/my_robot_controller/lib/python3.10/site-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ]
+}

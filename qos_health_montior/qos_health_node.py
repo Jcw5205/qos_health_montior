@@ -9,7 +9,7 @@ import tkinter as tk
 from tkinter import ttk
 import threading
 import pandas as pd
-import datetime 
+import datetime
 
 
 class TopicMonitor(Node):
@@ -17,8 +17,6 @@ class TopicMonitor(Node):
         super().__init__('qos_health_node')
         self.topics_info = {}
         self.update_interval = 1000  # ms
-        self.setup_topics()
-        self.create_gui()
 
         self.sub_dict = {}
         self.message_counts = {}
@@ -27,6 +25,10 @@ class TopicMonitor(Node):
         self.db_lock = threading.Lock()
         self.db_path = None
 
+        # Setup initial topics
+        self.setup_topics()
+        # Create GUI and start periodic updates
+        self.create_gui()
 
     def setup_topics(self):
         topic_list = self.get_topic_names_and_types()
@@ -40,10 +42,6 @@ class TopicMonitor(Node):
                 rel = "RELIABLE" if pub.qos_profile.reliability == ReliabilityPolicy.RELIABLE else "BEST_EFFORT"
                 pub_list.append(f"{pub.node_name} ({rel})")
 
-            pub_count = len(publishers_info)  # actual number of publisher handles
-            pub_display = f"{pub_count}: " + ', '.join(pub_list)
-
-
             self.topics_info[topic] = {
                 'msg_type': ', '.join(types),
                 'publishers': pub_list,
@@ -54,7 +52,7 @@ class TopicMonitor(Node):
         topic_list = self.get_topic_names_and_types()
 
         for topic_name, types in topic_list:
-            if topic_name in self.sub_dict or topic_name.startswith('/parameter_events') or topic_name.startswith('/rosout'):  # Changed
+            if topic_name in self.sub_dict or topic_name.startswith('/parameter_events') or topic_name.startswith('/rosout'):
                 continue
             
             msg_type_str = types[0]
@@ -68,24 +66,22 @@ class TopicMonitor(Node):
                         history=QoSHistoryPolicy.KEEP_LAST,  
                         depth=10
                     )
-                    subscription = self.create_subscription(  
+                    subscription = self.create_subscription(
                         msg_type,
                         topic_name,
-                        lambda msg, topic=topic_name, msg_type_str=msg_type_str: self.message_callback(msg, topic, msg_type_str), 
+                        lambda msg, topic=topic_name, msg_type_str=msg_type_str: self.message_callback(msg, topic, msg_type_str),
                         qos_profile
                     )
                     
-                    self.sub_dict[topic_name] = subscription  
+                    self.sub_dict[topic_name] = subscription
                     self.message_counts[topic_name] = 0
                     
                     self.get_logger().info(f'Subscribed to: {topic_name}')
                     
             except Exception as e:
                 self.get_logger().warn(f'Failed to subscribe to {topic_name}: {str(e)}')
-    
 
-    
-    def get_msg_type(msg_type_str):
+    def get_msg_type(self, msg_type_str):
         try:
             parts = msg_type_str.split('/')
             if len(parts) == 3:
@@ -97,17 +93,11 @@ class TopicMonitor(Node):
             self.get_logger().warn(f'Could not import {msg_type_str}: {str(e)}')
 
         return None
-                    
-
-
-
-    
 
     def create_gui(self):
         self.root = tk.Tk()
         self.root.title("ROS 2 Active Topics")
 
-        # Only one tab: Nodes per Topic
         self.tab_nodes = ttk.Frame(self.root)
         self.tab_nodes.pack(fill=tk.BOTH, expand=True)
 
@@ -117,21 +107,33 @@ class TopicMonitor(Node):
             self.tree_nodes.heading(col, text=col)
         self.tree_nodes.pack(fill=tk.BOTH, expand=True)
 
-        self.update_tree()
+        # Start periodic updates
+        self.periodic_update()
 
     def update_tree(self):
-        # Clear and repopulate nodes per topic
+        # Clear existing rows
         for item in self.tree_nodes.get_children():
             self.tree_nodes.delete(item)
+        # Populate with current topic info
         for topic, info in self.topics_info.items():
             pubs = f"{len(info['publishers'])}: " + ', '.join(info['publishers']) if info['publishers'] else "0"
             subs = ', '.join(info['subscribers']) if info['subscribers'] else "None"
             self.tree_nodes.insert("", tk.END, values=(topic, pubs, subs))
 
-        self.root.after(self.update_interval, self.update_tree)
+    def periodic_update(self):
+        self.setup_topics()            # Refresh topic info
+        self.discover_and_subscribe()  # Subscribe to new topics
+        self.update_tree()             # Update GUI
+        self.root.after(self.update_interval, self.periodic_update)
+
+    def message_callback(self, msg, topic, msg_type_str):
+        # Optional: handle incoming messages for counting or recording
+        self.message_counts[topic] += 1
+
 
 def spin_ros(node):
     rclpy.spin(node)
+
 
 def main(args=None):
     rclpy.init(args=args)
@@ -145,7 +147,8 @@ def main(args=None):
     node.destroy_node()
     rclpy.shutdown()
 
-'''
+
+
 #finish later 
 class SimpleBagRecorder(Node):
     def __init__(self):
@@ -157,7 +160,8 @@ class SimpleBagRecorder(Node):
             storage_id='mcap')
         converter_options = rosbag2_py.ConverterOptions('', '')
         self.writer.open(storage_options, converter_options)
-'''
+
 
 if __name__ == "__main__":
     main()
+
