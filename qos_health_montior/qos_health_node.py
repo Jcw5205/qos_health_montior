@@ -9,6 +9,8 @@ import tkinter as tk
 from tkinter import ttk
 import threading
 import pandas as pd
+import datetime 
+
 
 class TopicMonitor(Node):
     def __init__(self):
@@ -143,6 +145,8 @@ def main(args=None):
     node.destroy_node()
     rclpy.shutdown()
 
+'''
+#finish later 
 class SimpleBagRecorder(Node):
     def __init__(self):
         super().__init__('simple_bag_recorder')
@@ -153,6 +157,7 @@ class SimpleBagRecorder(Node):
             storage_id='mcap')
         converter_options = rosbag2_py.ConverterOptions('', '')
         self.writer.open(storage_options, converter_options)
+'''
 
 if __name__ == "__main__":
     main()
