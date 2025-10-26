@@ -16,6 +16,8 @@ import csv
 import shutil
 from pathlib import Path
 from collections import defaultdict
+from rclpy.clock import Clock
+import json
 
 
 class TopicMonitor(Node):
@@ -46,6 +48,11 @@ class TopicMonitor(Node):
 
         self.create_gui()
         self.refresh_timer = self.create_timer(2.0, self.setup_topics)
+        self.latency_stats = defaultdict(lambda: deque(maxlen=100))   # Track latency data per topic
+        self.stats_pub = self.create_publisher(String, '/statistics', 10)
+        self.create_timer(1.0, self.publish_statistics)  # every 1 second
+
+
 
 
     def setup_topics(self):
@@ -121,7 +128,18 @@ class TopicMonitor(Node):
                     
             except Exception as e:
                 self.get_logger().warn(f'Failed to subscribe to {topic_name}: {str(e)}')
-    
+
+                
+    def publish_statistics(self):
+        stats = {}
+        for topic, latencies in self.latency_stats.items():
+            if latencies:
+                avg_latency = sum(latencies) / len(latencies)
+                stats[topic] = {'average_latency_ms': round(avg_latency, 2)}
+        msg = String()
+        msg.data = json.dumps(stats)
+        self.stats_pub.publish(msg)
+
 
     def get_msg_type(self, msg_type_str):
         try:
@@ -216,10 +234,14 @@ class TopicMonitor(Node):
 
         msg_timestamp_sec = 0
         msg_timestamp_nanosec = 0
-        
+        now = Clock().now()
+
         if hasattr(msg, 'header') and hasattr(msg.header, 'stamp'):
             msg_timestamp_sec = msg.header.stamp.sec
             msg_timestamp_nanosec = msg.header.stamp.nanosec
+            pub_time = Clock().from_msg(msg.header.stamp)
+            latency = (now - pub_time).nanoseconds / 1e6
+            self.latency_stats[topic].append(latency)
   
         try:
             serialized = serialize_message(msg)
