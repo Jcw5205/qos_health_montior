@@ -1,0 +1,34 @@
+[0.892s] Invoking command in '/home/jacobb/ros2_ws/qos_health_montior': PYTHONPATH=/home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jacobb/ros2_ws/qos_health_montior/install/qos_health_montior/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/qos_health_montior build --build-base /home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/build install --record /home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/install.log --single-version-externally-managed install_data
+[1.167s] running egg_info
+[1.167s] creating build/qos_health_montior/qos_health_montior.egg-info
+[1.167s] writing build/qos_health_montior/qos_health_montior.egg-info/PKG-INFO
+[1.167s] writing dependency_links to build/qos_health_montior/qos_health_montior.egg-info/dependency_links.txt
+[1.167s] writing entry points to build/qos_health_montior/qos_health_montior.egg-info/entry_points.txt
+[1.167s] writing requirements to build/qos_health_montior/qos_health_montior.egg-info/requires.txt
+[1.167s] writing top-level names to build/qos_health_montior/qos_health_montior.egg-info/top_level.txt
+[1.168s] writing manifest file 'build/qos_health_montior/qos_health_montior.egg-info/SOURCES.txt'
+[1.168s] reading manifest file 'build/qos_health_montior/qos_health_montior.egg-info/SOURCES.txt'
+[1.168s] adding license file 'LICENSE'
+[1.168s] writing manifest file 'build/qos_health_montior/qos_health_montior.egg-info/SOURCES.txt'
+[1.168s] running build
+[1.168s] running build_py
+[1.168s] creating /home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/build
+[1.168s] creating /home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/build/lib
+[1.168s] creating /home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/build/lib/qos_health_montior
+[1.168s] copying qos_health_montior/__init__.py -> /home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/build/lib/qos_health_montior
+[1.168s] copying qos_health_montior/qos_health_node.py -> /home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/build/lib/qos_health_montior
+[1.168s] running install
+[1.168s] running install_lib
+[1.169s] creating /home/jacobb/ros2_ws/qos_health_montior/install/qos_health_montior/lib/python3.10/site-packages/qos_health_montior
+[1.169s] copying /home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/build/lib/qos_health_montior/__init__.py -> /home/jacobb/ros2_ws/qos_health_montior/install/qos_health_montior/lib/python3.10/site-packages/qos_health_montior
+[1.169s] copying /home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/build/lib/qos_health_montior/qos_health_node.py -> /home/jacobb/ros2_ws/qos_health_montior/install/qos_health_montior/lib/python3.10/site-packages/qos_health_montior
+[1.169s] byte-compiling /home/jacobb/ros2_ws/qos_health_montior/install/qos_health_montior/lib/python3.10/site-packages/qos_health_montior/__init__.py to __init__.cpython-310.pyc
+[1.169s] byte-compiling /home/jacobb/ros2_ws/qos_health_montior/install/qos_health_montior/lib/python3.10/site-packages/qos_health_montior/qos_health_node.py to qos_health_node.cpython-310.pyc
+[1.173s] running install_data
+[1.174s] copying package.xml -> /home/jacobb/ros2_ws/qos_health_montior/install/qos_health_montior/share/qos_health_montior
+[1.174s] running install_egg_info
+[1.180s] Copying build/qos_health_montior/qos_health_montior.egg-info to /home/jacobb/ros2_ws/qos_health_montior/install/qos_health_montior/lib/python3.10/site-packages/qos_health_montior-0.0.0-py3.10.egg-info
+[1.181s] running install_scripts
+[1.206s] Installing qos_health_node script to /home/jacobb/ros2_ws/qos_health_montior/install/qos_health_montior/lib/qos_health_montior
+[1.206s] writing list of installed files to '/home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/install.log'
+[1.238s] Invoked command in '/home/jacobb/ros2_ws/qos_health_montior' returned '0': PYTHONPATH=/home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jacobb/ros2_ws/qos_health_montior/install/qos_health_montior/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/qos_health_montior build --build-base /home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/build install --record /home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/install.log --single-version-externally-managed install_data

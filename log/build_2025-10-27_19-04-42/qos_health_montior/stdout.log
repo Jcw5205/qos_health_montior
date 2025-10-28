@@ -1,0 +1,32 @@
+running egg_info
+creating build/qos_health_montior/qos_health_montior.egg-info
+writing build/qos_health_montior/qos_health_montior.egg-info/PKG-INFO
+writing dependency_links to build/qos_health_montior/qos_health_montior.egg-info/dependency_links.txt
+writing entry points to build/qos_health_montior/qos_health_montior.egg-info/entry_points.txt
+writing requirements to build/qos_health_montior/qos_health_montior.egg-info/requires.txt
+writing top-level names to build/qos_health_montior/qos_health_montior.egg-info/top_level.txt
+writing manifest file 'build/qos_health_montior/qos_health_montior.egg-info/SOURCES.txt'
+reading manifest file 'build/qos_health_montior/qos_health_montior.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file 'build/qos_health_montior/qos_health_montior.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/build
+creating /home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/build/lib
+creating /home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/build/lib/qos_health_montior
+copying qos_health_montior/__init__.py -> /home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/build/lib/qos_health_montior
+copying qos_health_montior/qos_health_node.py -> /home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/build/lib/qos_health_montior
+running install
+running install_lib
+creating /home/jacobb/ros2_ws/qos_health_montior/install/qos_health_montior/lib/python3.10/site-packages/qos_health_montior
+copying /home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/build/lib/qos_health_montior/__init__.py -> /home/jacobb/ros2_ws/qos_health_montior/install/qos_health_montior/lib/python3.10/site-packages/qos_health_montior
+copying /home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/build/lib/qos_health_montior/qos_health_node.py -> /home/jacobb/ros2_ws/qos_health_montior/install/qos_health_montior/lib/python3.10/site-packages/qos_health_montior
+byte-compiling /home/jacobb/ros2_ws/qos_health_montior/install/qos_health_montior/lib/python3.10/site-packages/qos_health_montior/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/jacobb/ros2_ws/qos_health_montior/install/qos_health_montior/lib/python3.10/site-packages/qos_health_montior/qos_health_node.py to qos_health_node.cpython-310.pyc
+running install_data
+copying package.xml -> /home/jacobb/ros2_ws/qos_health_montior/install/qos_health_montior/share/qos_health_montior
+running install_egg_info
+Copying build/qos_health_montior/qos_health_montior.egg-info to /home/jacobb/ros2_ws/qos_health_montior/install/qos_health_montior/lib/python3.10/site-packages/qos_health_montior-0.0.0-py3.10.egg-info
+running install_scripts
+Installing qos_health_node script to /home/jacobb/ros2_ws/qos_health_montior/install/qos_health_montior/lib/qos_health_montior
+writing list of installed files to '/home/jacobb/ros2_ws/qos_health_montior/build/qos_health_montior/install.log'

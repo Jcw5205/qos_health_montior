@@ -15,10 +15,11 @@ import time
 import csv
 import shutil
 from pathlib import Path
-from collections import defaultdict, deque
+from collections import defaultdict
 from rclpy.clock import Clock
 import json
-from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
+import time
+
 
 
 class TopicMonitor(Node):
@@ -50,9 +51,8 @@ class TopicMonitor(Node):
         self.create_gui()
         self.refresh_timer = self.create_timer(2.0, self.setup_topics)
         self.latency_stats = defaultdict(lambda: deque(maxlen=100))   # Track latency data per topic
-        self.stats_pub = self.create_publisher(DiagnosticArray, '/statistics', 10)
+        self.stats_pub = self.create_publisher(String, '/statistics', 10)
         self.create_timer(1.0, self.publish_statistics)  # every 1 second
-        
 
 
 
@@ -133,23 +133,28 @@ class TopicMonitor(Node):
 
                 
     def publish_statistics(self):
-        msg = DiagnosticArray()
-        msg.header.stamp = Clock().now().to_msg()
+        now = Clock().now()
+        now_nsec = now.nanoseconds
+
+        stats = {}
 
         for topic, latencies in self.latency_stats.items():
-            if not latencies:
-                continue
+            if latencies:
+                avg_latency = sum(latencies) / len(latencies)
+                stats[topic] = {
+                    "average_latency_ms": round(avg_latency, 2),
+                    "samples": len(latencies),
+                    "timestamp_ns": now_nsec
+            }
 
-            avg_latency = sum(latencies) / len(latencies)
-
-            status = DiagnosticStatus()
-            status.name = f"Topic: {topic}"
-            status.level = DiagnosticStatus.OK
-            status.message = "Average Latency"
-            status.values = [
-                KeyValue(key="avg_latency_ms", value=f"{avg_latency:.2f}")
-            ]
-            msg.status.append(status)
+        # Attach a timestamp field manually
+        msg = String()
+        msg.data = json.dumps({
+            "header": {
+                "stamp_ns": now_nsec
+        },
+            "statistics": stats
+     })
 
         self.stats_pub.publish(msg)
 
@@ -247,14 +252,14 @@ class TopicMonitor(Node):
 
         msg_timestamp_sec = 0
         msg_timestamp_nanosec = 0
-        now = self.get_clock().now().nanoseconds * 1e-9
+        now = Clock().now()
 
         if hasattr(msg, 'header') and hasattr(msg.header, 'stamp'):
             msg_timestamp_sec = msg.header.stamp.sec
             msg_timestamp_nanosec = msg.header.stamp.nanosec
-            pub_time = msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9
-            latency = (now - pub_time) * 1000.0  # milliseconds
-            self.latency_stats[topic_name].append(latency)
+            pub_time = Clock().from_msg(msg.header.stamp)
+            latency = (now - pub_time).nanoseconds / 1e6
+            self.latency_stats[topic].append(latency)
   
         try:
             serialized = serialize_message(msg)
