@@ -1,3 +1,0 @@
-[console_scripts]
-qos_health_node = qos_health_montior.qos_health_node:main
-

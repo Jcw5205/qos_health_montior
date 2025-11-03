@@ -1,6 +1,0 @@
-source;share/qos_health_montior/hook/pythonpath.ps1
-source;share/qos_health_montior/hook/pythonpath.dsv
-source;share/qos_health_montior/hook/pythonpath.sh
-source;share/qos_health_montior/hook/ament_prefix_path.ps1
-source;share/qos_health_montior/hook/ament_prefix_path.dsv
-source;share/qos_health_montior/hook/ament_prefix_path.sh
