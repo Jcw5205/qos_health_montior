@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
+from rclpy.time import Time
 from rclpy.serialization import serialize_message, deserialize_message
 from rosidl_runtime_py.utilities import get_message
 from std_msgs.msg import String
 import rosbag2_py 
 from rosbag2_py import SequentialReader, SequentialWriter, StorageOptions, ConverterOptions, TopicMetadata
-from rclpy.qos import ReliabilityPolicy, QoSProfile, QoSHistoryPolicy
+from rclpy.qos import ReliabilityPolicy, QoSProfile, QoSHistoryPolicy, QoSPresetProfiles
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import threading
@@ -15,10 +16,7 @@ import time
 import csv
 import shutil
 from pathlib import Path
-from collections import defaultdict, deque
-from rclpy.clock import Clock
-import json
-from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
+from collections import defaultdict
 
 
 class TopicMonitor(Node):
@@ -49,12 +47,6 @@ class TopicMonitor(Node):
 
         self.create_gui()
         self.refresh_timer = self.create_timer(2.0, self.setup_topics)
-        self.latency_stats = defaultdict(lambda: deque(maxlen=100))   # Track latency data per topic
-        self.stats_pub = self.create_publisher(DiagnosticArray, '/statistics', 10)
-        self.create_timer(1.0, self.publish_statistics)  # every 1 second
-        
-
-
 
 
     def setup_topics(self):
@@ -130,29 +122,7 @@ class TopicMonitor(Node):
                     
             except Exception as e:
                 self.get_logger().warn(f'Failed to subscribe to {topic_name}: {str(e)}')
-
-                
-    def publish_statistics(self):
-        msg = DiagnosticArray()
-        msg.header.stamp = Clock().now().to_msg()
-
-        for topic, latencies in self.latency_stats.items():
-            if not latencies:
-                continue
-
-            avg_latency = sum(latencies) / len(latencies)
-
-            status = DiagnosticStatus()
-            status.name = f"Topic: {topic}"
-            status.level = DiagnosticStatus.OK
-            status.message = "Average Latency"
-            status.values = [
-                KeyValue(key="avg_latency_ms", value=f"{avg_latency:.2f}")
-            ]
-            msg.status.append(status)
-
-        self.stats_pub.publish(msg)
-
+    
 
     def get_msg_type(self, msg_type_str):
         try:
@@ -241,21 +211,17 @@ class TopicMonitor(Node):
     def message_callback(self, msg, topic_name, msg_type_str):
         if not self.is_recording or self.bag_writer is None:
             return
-   
+
         receive_time = time.time()
         timestamp_nanosec = self.get_clock().now().nanoseconds 
 
         msg_timestamp_sec = 0
         msg_timestamp_nanosec = 0
-        now = self.get_clock().now().nanoseconds * 1e-9
-
+        
         if hasattr(msg, 'header') and hasattr(msg.header, 'stamp'):
             msg_timestamp_sec = msg.header.stamp.sec
             msg_timestamp_nanosec = msg.header.stamp.nanosec
-            pub_time = msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9
-            latency = (now - pub_time) * 1000.0  # milliseconds
-            self.latency_stats[topic_name].append(latency)
-  
+
         try:
             serialized = serialize_message(msg)
             data_size = len(serialized)
@@ -268,13 +234,23 @@ class TopicMonitor(Node):
         except Exception as e:
             self.get_logger().error(f'Error writing to bag: {str(e)}')
             return
-      
+    
         self.message_counts[topic_name] += 1
         
         metrics = self.qos_metrics[topic_name]
+  
+        if topic_name in self.sub_dict:
+            try:
+          
+                pub_stats = self.sub_dict[topic_name].get_publisher_matched_status()
+
+                
+            except Exception as e:
+                pass 
         
+  
         msg_timestamp = msg_timestamp_sec + msg_timestamp_nanosec * 1e-9
-        
+
         if msg_timestamp > 0:
             latency = receive_time - msg_timestamp
             metrics['latency_ms'] = latency * 1000
@@ -282,7 +258,13 @@ class TopicMonitor(Node):
             
             if len(metrics['msg_timestamps']) > 100:
                 metrics['msg_timestamps'].pop(0)
-       
+        else:
+   
+            if metrics['last_receive_time'] is not None:
+                inter_arrival = receive_time - metrics['last_receive_time']
+  
+                metrics['latency_ms'] = inter_arrival * 1000
+    
         if metrics['last_receive_time'] is not None:
             inter_arrival = receive_time - metrics['last_receive_time']
             metrics['inter_arrival_times'].append(inter_arrival)
